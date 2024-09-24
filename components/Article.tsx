@@ -50,9 +50,19 @@ const Article: React.FC<ArticleProps> = ({ title, onArticleClick, onSourceClick 
     return <div className="p-4 text-red-500">Article not found: {title}</div>
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleArticleClick = (articleTitle: string) => {
+    onArticleClick(articleTitle)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSourceClick = (sourceNumber: number) => {
+    onSourceClick(sourceNumber)
+  }
+
   const createMarkup = (content: string) => {
-    return { __html: content.replace(/onArticleClick$$(.*?)$$/g, `(event) => {event.preventDefault(); onArticleClick($1)}`)
-                            .replace(/onSourceClick$$(.*?)$$/g, `(event) => {event.preventDefault(); onSourceClick($1)}`) }
+    return { __html: content.replace(/onArticleClick\$\$(.*?)\$\$/g, `(event) => {event.preventDefault(); handleArticleClick($1)}`)
+                            .replace(/onSourceClick\$\$(.*?)\$\$/g, `(event) => {event.preventDefault(); handleSourceClick($1)}`) }
   }
 
   return (

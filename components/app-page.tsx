@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from 'react'
-import { Bell, ChevronDown, Search, Upload, PlusCircle, Crown, X, MessageSquare, Globe, Video, FileText, ChevronRight } from 'lucide-react'
+import { Bell, ChevronDown, Upload, PlusCircle, Crown, MessageSquare, Globe, Video, FileText, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -194,7 +194,7 @@ export default function Dashboard() {
     updateSources(articleTitle)
   }
 
-  const handleSourceClick = (sourceNumber: number) => {
+  const handleSourceClick = () => {
     setCurrentMainTab('analysis')
     setCurrentAnalysisTab('sources')
   }
