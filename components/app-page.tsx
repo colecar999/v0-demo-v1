@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from 'react'
-import { Bell, ChevronDown, Search, Upload, PlusCircle, Crown, X, MessageSquare, Globe, Video, FileText, ChevronRight } from 'lucide-react'
+import { Bell, ChevronDown, Upload, PlusCircle, Crown, MessageSquare, Globe, Video, FileText, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -168,12 +168,12 @@ export function Page() {
     setCurrentTopic(topic)
   }
 
-  const handleEventClick = (eventId: number) => {
+  const handleEventClick = () => {
     setCurrentMainTab('analysis')
     setCurrentAnalysisTab('timeline')
   }
 
-  const handlePlaceClick = (placeId: number) => {
+  const handlePlaceClick = () => {
     setCurrentMainTab('analysis')
     setCurrentAnalysisTab('map')
   }
@@ -329,7 +329,7 @@ export function Page() {
                   <div className="w-8 h-8 bg-blue-500 rounded-full flex-shrink-0"></div>
                   <div className="bg-blue-100 rounded-lg p-2">
                     <p>
-                      Lorem ipsum <a href="#" className="text-blue-600 hover:underline" onClick={() => handleEventClick(1)}>dolor sit amet<sup>1</sup></a>, consectetur adipiscing elit, sed do <a href="#" className="text-blue-600 hover:underline" onClick={() => handlePlaceClick(2)}>eiusmod tempor incididunt<sup>2</sup></a> ut labore et dolore magna aliqua.
+                      Lorem ipsum <a href="#" className="text-blue-600 hover:underline" onClick={() => handleEventClick()}>dolor sit amet<sup>1</sup></a>, consectetur adipiscing elit, sed do <a href="#" className="text-blue-600 hover:underline" onClick={() => handlePlaceClick()}>eiusmod tempor incididunt<sup>2</sup></a> ut labore et dolore magna aliqua.
                     </p>
                   </div>
                 </div>

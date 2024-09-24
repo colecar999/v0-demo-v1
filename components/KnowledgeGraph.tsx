@@ -3,14 +3,14 @@
 import React, { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 
-interface Node {
+interface Node extends d3.SimulationNodeDatum {
   id: number
   type: 'hub' | 'event' | 'place'
 }
 
-interface Link {
-  source: number
-  target: number
+interface Link extends d3.SimulationLinkDatum<Node> {
+  source: Node
+  target: Node
 }
 
 interface KnowledgeGraphProps {
@@ -46,32 +46,32 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ onEventClick, onPlaceCl
     ]
 
     const links: Link[] = [
-      { source: 1, target: 2 },
-      { source: 2, target: 3 },
-      { source: 3, target: 4 },
-      { source: 1, target: 3 },
-      { source: 1, target: 5 },
-      { source: 1, target: 6 },
-      { source: 1, target: 7 },
-      { source: 1, target: 8 },
-      { source: 2, target: 9 },
-      { source: 2, target: 10 },
-      { source: 2, target: 11 },
-      { source: 3, target: 12 },
-      { source: 3, target: 13 },
-      { source: 3, target: 14 },
-      { source: 3, target: 15 },
-      { source: 4, target: 12 },
-      { source: 4, target: 13 },
-      { source: 4, target: 14 },
+      { source: nodes[0], target: nodes[1] },
+      { source: nodes[1], target: nodes[2] },
+      { source: nodes[2], target: nodes[3] },
+      { source: nodes[0], target: nodes[2] },
+      { source: nodes[0], target: nodes[4] },
+      { source: nodes[0], target: nodes[5] },
+      { source: nodes[0], target: nodes[6] },
+      { source: nodes[0], target: nodes[7] },
+      { source: nodes[1], target: nodes[8] },
+      { source: nodes[1], target: nodes[9] },
+      { source: nodes[1], target: nodes[10] },
+      { source: nodes[2], target: nodes[11] },
+      { source: nodes[2], target: nodes[12] },
+      { source: nodes[2], target: nodes[13] },
+      { source: nodes[2], target: nodes[14] },
+      { source: nodes[3], target: nodes[11] },
+      { source: nodes[3], target: nodes[12] },
+      { source: nodes[3], target: nodes[13] },
     ]
 
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height)
 
-    const simulation = d3.forceSimulation(nodes as d3.SimulationNodeDatum[])
-      .force('link', d3.forceLink(links).id((d: any) => d.id))
+    const simulation = d3.forceSimulation<Node, Link>(nodes)
+      .force('link', d3.forceLink<Node, Link>(links).id((d) => d.id))
       .force('charge', d3.forceManyBody().strength(-200))
       .force('center', d3.forceCenter(width / 2, height / 2))
 
@@ -83,7 +83,7 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ onEventClick, onPlaceCl
       .attr('stroke-opacity', 0.6)
 
     const node = svg.append('g')
-      .selectAll('circle')
+      .selectAll<SVGCircleElement, Node>('circle')
       .data(nodes)
       .join('circle')
       .attr('r', 8)
@@ -110,14 +110,14 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ onEventClick, onPlaceCl
 
     simulation.on('tick', () => {
       link
-        .attr('x1', (d: any) => d.source.x)
-        .attr('y1', (d: any) => d.source.y)
-        .attr('x2', (d: any) => d.target.x)
-        .attr('y2', (d: any) => d.target.y)
+        .attr('x1', (d) => (d.source as Node).x!)
+        .attr('y1', (d) => (d.source as Node).y!)
+        .attr('x2', (d) => (d.target as Node).x!)
+        .attr('y2', (d) => (d.target as Node).y!)
 
       node
-        .attr('cx', (d: any) => d.x)
-        .attr('cy', (d: any) => d.y)
+        .attr('cx', (d) => d.x!)
+        .attr('cy', (d) => d.y!)
     })
 
     // Add legend
@@ -151,25 +151,25 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ onEventClick, onPlaceCl
       .style('font-size', '12px')
       .attr('alignment-baseline', 'middle')
 
-    function drag(simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>) {
-      function dragstarted(event: any) {
+    function drag(simulation: d3.Simulation<Node, Link>) {
+      function dragstarted(event: d3.D3DragEvent<SVGCircleElement, Node, Node>) {
         if (!event.active) simulation.alphaTarget(0.3).restart()
         event.subject.fx = event.subject.x
         event.subject.fy = event.subject.y
       }
 
-      function dragged(event: any) {
+      function dragged(event: d3.D3DragEvent<SVGCircleElement, Node, Node>) {
         event.subject.fx = event.x
         event.subject.fy = event.y
       }
 
-      function dragended(event: any) {
+      function dragended(event: d3.D3DragEvent<SVGCircleElement, Node, Node>) {
         if (!event.active) simulation.alphaTarget(0)
         event.subject.fx = null
         event.subject.fy = null
       }
 
-      return d3.drag()
+      return d3.drag<SVGCircleElement, Node, Node>()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended)

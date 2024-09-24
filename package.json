@@ -28,6 +28,7 @@
     "vis-timeline": "^7.7.3"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -26,13 +26,13 @@ const WorldMap: React.FC = () => {
 
     const g = svg.append('g')
 
-    const zoom = d3.zoom()
-      .scaleExtent([0.5, 8]) // Changed from [1, 8] to [0.5, 8] to allow more zooming out
-      .on('zoom', (event) => {
-        g.attr('transform', event.transform)
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.5, 8])
+      .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
+        g.attr('transform', event.transform.toString())
       })
 
-    svg.call(zoom as any)
+    svg.call(zoom as unknown as (selection: d3.Selection<SVGSVGElement, unknown, null, undefined>) => void)
 
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then((data: any) => {
       const countries = feature(data, data.objects.countries)
@@ -46,11 +46,11 @@ const WorldMap: React.FC = () => {
         .attr('stroke', '#fff')
 
       const locations = [
-        { name: 'New York', coordinates: [-74.006, 40.7128] },
-        { name: 'London', coordinates: [-0.1276, 51.5074] },
-        { name: 'Tokyo', coordinates: [139.6917, 35.6895] },
-        { name: 'Sydney', coordinates: [151.2093, -33.8688] },
-        { name: 'Rio de Janeiro', coordinates: [-43.1729, -22.9068] },
+        { name: 'New York', coordinates: [-74.006, 40.7128] as [number, number] },
+        { name: 'London', coordinates: [-0.1276, 51.5074] as [number, number] },
+        { name: 'Tokyo', coordinates: [139.6917, 35.6895] as [number, number] },
+        { name: 'Sydney', coordinates: [151.2093, -33.8688] as [number, number] },
+        { name: 'Rio de Janeiro', coordinates: [-43.1729, -22.9068] as [number, number] },
       ]
 
       g.selectAll('circle')
