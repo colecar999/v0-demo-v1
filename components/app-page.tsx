@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from 'react'
-import { Bell, ChevronDown, Upload, PlusCircle, Crown, MessageSquare, Globe, Video, FileText, ChevronRight } from 'lucide-react'
+import { Bell, ChevronDown, Search, Upload, PlusCircle, Crown, X, MessageSquare, Globe, Video, FileText, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -25,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import KnowledgeGraph from '../components/KnowledgeGraph'
 import Timeline from '../components/Timeline'
 import WorldMap from '../components/WorldMap'
+import Article from '../components/Article'
 
 type FileType = 'Video' | 'Document' | 'Web'
 type Contributor = 'SmallFrank450' | 'R3s3archLuvr777' | 'NotVeryTrustworthy'
@@ -102,9 +103,12 @@ const initialData: ContributorData[] = [
   },
 ]
 
-export function Page() {
-  const [leftPaneWidth, setLeftPaneWidth] = useState(66.67)
-  const [isDragging, setIsDragging] = useState(false)
+export default function Dashboard() {
+  const [leftPaneWidth, setLeftPaneWidth] = useState(25)
+  const [middlePaneWidth, setMiddlePaneWidth] = useState(50)
+  const [rightPaneWidth, setRightPaneWidth] = useState(25)
+  const [isDraggingLeft, setIsDraggingLeft] = useState(false)
+  const [isDraggingRight, setIsDraggingRight] = useState(false)
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
   const [currentPage, setCurrentPage] = useState('home')
   const [currentTopic, setCurrentTopic] = useState('')
@@ -115,9 +119,10 @@ export function Page() {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set())
   const [selectedContributor, setSelectedContributor] = useState<Contributor | null>(null)
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null)
+  const [currentArticle, setCurrentArticle] = useState<string>("Dolor Sit Amet")
+  const [currentSources, setCurrentSources] = useState<string[]>([])
 
   useEffect(() => {
-    // Initialize all checkboxes to be checked
     const allItems = new Set<string>()
     initialData.forEach(contributor => {
       allItems.add(contributor.name)
@@ -131,20 +136,32 @@ export function Page() {
     setCheckedItems(allItems)
   }, [])
 
-  const handleMouseDown = useCallback(() => {
-    setIsDragging(true)
+  const handleMouseDown = useCallback((pane: 'left' | 'right') => {
+    if (pane === 'left') {
+      setIsDraggingLeft(true)
+    } else {
+      setIsDraggingRight(true)
+    }
   }, [])
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
+    setIsDraggingLeft(false)
+    setIsDraggingRight(false)
   }, [])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging) {
-      const newWidth = (e.clientX / window.innerWidth) * 100
-      setLeftPaneWidth(Math.max(20, Math.min(80, newWidth)))
+    if (isDraggingLeft) {
+      const newLeftWidth = (e.clientX / window.innerWidth) * 100
+      const newMiddleWidth = middlePaneWidth + (leftPaneWidth - newLeftWidth)
+      setLeftPaneWidth(Math.max(20, Math.min(40, newLeftWidth)))
+      setMiddlePaneWidth(Math.max(30, Math.min(60, newMiddleWidth)))
+    } else if (isDraggingRight) {
+      const newRightWidth = ((window.innerWidth - e.clientX) / window.innerWidth) * 100
+      const newMiddleWidth = middlePaneWidth + (rightPaneWidth - newRightWidth)
+      setRightPaneWidth(Math.max(20, Math.min(40, newRightWidth)))
+      setMiddlePaneWidth(Math.max(30, Math.min(60, newMiddleWidth)))
     }
-  }, [isDragging])
+  }, [isDraggingLeft, isDraggingRight, leftPaneWidth, middlePaneWidth, rightPaneWidth])
 
   const trendingTopics = [
     "Quantum Computing Advancements",
@@ -166,16 +183,52 @@ export function Page() {
   const handleTopicClick = (topic: string) => {
     setCurrentPage('topic')
     setCurrentTopic(topic)
+    setCurrentArticle("Dolor Sit Amet")
+    updateSources("Dolor Sit Amet")
   }
 
-  const handleEventClick = () => {
+  const handleArticleClick = (articleTitle: string) => {
+    setCurrentArticle(articleTitle)
     setCurrentMainTab('analysis')
-    setCurrentAnalysisTab('timeline')
+    setCurrentAnalysisTab('sources')
+    updateSources(articleTitle)
   }
 
-  const handlePlaceClick = () => {
+  const handleSourceClick = (sourceNumber: number) => {
     setCurrentMainTab('analysis')
-    setCurrentAnalysisTab('map')
+    setCurrentAnalysisTab('sources')
+  }
+
+  const updateSources = (articleTitle: string) => {
+    const sources = {
+      "Dolor Sit Amet": [
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
+        "Excepteur sint occaecat cupidatat non proident, sunt in culpa.",
+        "Qui officia deserunt mollit anim id est laborum.",
+        "Sed ut perspiciatis unde omnis iste natus error sit voluptatem.",
+        "Accusantium doloremque laudantium, totam rem aperiam.",
+        "Eaque ipsa quae ab illo inventore veritatis et quasi architecto.",
+        "Beatae vitae dicta sunt explicabo.",
+        "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit."
+      ],
+      "Eiusmod Tempor Incididunt": [
+        "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
+        "Sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+        "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.",
+        "Consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.",
+        "At vero eos et accusamus et iusto odio dignissimos ducimus.",
+        "Qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores.",
+        "Et quas molestias excepturi sint occaecati cupiditate non provident.",
+        "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit.",
+        "Quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.",
+        "Omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis.",
+        "Aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae."
+      ]
+    }
+    setCurrentSources(sources[articleTitle as keyof typeof sources] || [])
   }
 
   const handleTypeChange = (type: FileType) => {
@@ -283,7 +336,7 @@ export function Page() {
       <main className="flex flex-1 overflow-hidden">
         {currentPage === 'home' ? (
           <>
-            <div style={{ width: `${leftPaneWidth}%` }} className="p-4 border-r overflow-y-auto">
+            <div className="w-3/4 p-4 border-r overflow-y-auto">
               <h2 className="text-xl font-bold mb-4">Trending Topics</h2>
               <ul className="space-y-2">
                 {trendingTopics.map((topic, index) => (
@@ -294,11 +347,7 @@ export function Page() {
                 ))}
               </ul>
             </div>
-            <div
-              className="w-1 bg-gray-200 cursor-col-resize hover:bg-gray-300 transition-colors"
-              onMouseDown={handleMouseDown}
-            ></div>
-            <div style={{ width: `${100 - leftPaneWidth}%` }} className="p-4">
+            <div className="w-1/4 p-4">
               <div className="flex flex-col space-y-4">
                 <Button variant="outline" onClick={handleProFeatureClick} className="justify-start hover:bg-gray-100">
                   <Upload className="mr-2 h-4 w-4" /> Upload Data
@@ -329,7 +378,7 @@ export function Page() {
                   <div className="w-8 h-8 bg-blue-500 rounded-full flex-shrink-0"></div>
                   <div className="bg-blue-100 rounded-lg p-2">
                     <p>
-                      Lorem ipsum <a href="#" className="text-blue-600 hover:underline" onClick={() => handleEventClick()}>dolor sit amet<sup>1</sup></a>, consectetur adipiscing elit, sed do <a href="#" className="text-blue-600 hover:underline" onClick={() => handlePlaceClick()}>eiusmod tempor incididunt<sup>2</sup></a> ut labore et dolore magna aliqua.
+                      Lorem ipsum <a href="#" className="text-blue-600 hover:underline" onClick={() => handleArticleClick("Dolor Sit Amet")}>dolor sit amet</a>, consectetur adipiscing elit, sed do <a href="#" className="text-blue-600 hover:underline" onClick={() => handleArticleClick("Eiusmod Tempor Incididunt")}>eiusmod tempor incididunt</a> ut labore et dolore magna aliqua.
                     </p>
                   </div>
                 </div>
@@ -340,9 +389,23 @@ export function Page() {
             </div>
             <div
               className="w-1 bg-gray-200 cursor-col-resize hover:bg-gray-300 transition-colors"
-              onMouseDown={handleMouseDown}
+              onMouseDown={() => handleMouseDown('left')}
             ></div>
-            <div style={{ width: `${100 - leftPaneWidth}%` }} className="p-4 overflow-y-auto">
+            <div style={{ width: `${middlePaneWidth}%` }} className="border-r overflow-y-auto">
+              <div className="p-4">
+                <h2 className="text-xl font-bold mb-4">Articles</h2>
+                <Article
+                  title={currentArticle}
+                  onArticleClick={handleArticleClick}
+                  onSourceClick={handleSourceClick}
+                />
+              </div>
+            </div>
+            <div
+              className="w-1 bg-gray-200 cursor-col-resize hover:bg-gray-300 transition-colors"
+              onMouseDown={() => handleMouseDown('right')}
+            ></div>
+            <div style={{ width: `${rightPaneWidth}%` }} className="p-4 overflow-y-auto">
               <Tabs value={currentMainTab} onValueChange={setCurrentMainTab}>
                 <TabsList>
                   <TabsTrigger value="home">Home</TabsTrigger>
@@ -390,7 +453,7 @@ export function Page() {
                     <TabsContent value="knowledge-graph">
                       <div className="border rounded-lg p-4 mt-4">
                         <h3 className="text-lg font-semibold mb-2">Interactive Knowledge Graph</h3>
-                        <KnowledgeGraph onEventClick={handleEventClick} onPlaceClick={handlePlaceClick} />
+                        <KnowledgeGraph onEventClick={() => {}} onPlaceClick={() => {}} />
                       </div>
                     </TabsContent>
                     <TabsContent value="timeline">
@@ -409,8 +472,9 @@ export function Page() {
                       <div className="border rounded-lg p-4 mt-4">
                         <h3 className="text-lg font-semibold mb-2">Sources</h3>
                         <ul className="list-decimal list-inside">
-                          <li>Lorem ipsum dolor sit amet</li>
-                          <li>Consectetur adipiscing elit</li>
+                          {currentSources.map((source, index) => (
+                            <li key={index}>{source}</li>
+                          ))}
                         </ul>
                       </div>
                     </TabsContent>
