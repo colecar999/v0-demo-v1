@@ -163,6 +163,25 @@ export default function Dashboard() {
     }
   }, [isDraggingLeft, isDraggingRight, leftPaneWidth, middlePaneWidth, rightPaneWidth])
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (isDraggingLeft) {
+        const newLeftWidth = (window.innerWidth * leftPaneWidth / 100) / window.innerWidth * 100
+        const newMiddleWidth = middlePaneWidth + (leftPaneWidth - newLeftWidth)
+        setLeftPaneWidth(Math.max(20, Math.min(40, newLeftWidth)))
+        setMiddlePaneWidth(Math.max(30, Math.min(60, newMiddleWidth)))
+      } else if (isDraggingRight) {
+        const newRightWidth = (window.innerWidth * rightPaneWidth / 100) / window.innerWidth * 100
+        const newMiddleWidth = middlePaneWidth + (rightPaneWidth - newRightWidth)
+        setRightPaneWidth(Math.max(20, Math.min(40, newRightWidth)))
+        setMiddlePaneWidth(Math.max(30, Math.min(60, newMiddleWidth)))
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isDraggingLeft, isDraggingRight, leftPaneWidth, middlePaneWidth, rightPaneWidth])
+
   const trendingTopics = [
     "Quantum Computing Advancements",
     "Climate Change Mitigation Strategies",

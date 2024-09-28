@@ -10,6 +10,9 @@ const Timeline: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current) return
 
+    // Clear previous content
+    containerRef.current.innerHTML = ''
+
     const items = [
       { id: 1, content: 'Event 1', start: '2023-01-01' },
       { id: 2, content: 'Event 2', start: '2023-03-15' },
@@ -28,7 +31,7 @@ const Timeline: React.FC = () => {
     new VisTimeline(containerRef.current, items, options)
   }, [])
 
-  return <div ref={containerRef}></div>
+  return <div ref={containerRef} style={{ width: '100%', height: '400px' }}></div>
 }
 
 export default Timeline

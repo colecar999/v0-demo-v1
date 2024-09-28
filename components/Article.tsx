@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react'
 
 interface ArticleProps {
@@ -77,5 +79,4 @@ const Article: React.FC<ArticleProps> = ({ title, onArticleClick, onSourceClick 
     </div>
   )
 }
-
 export default Article
